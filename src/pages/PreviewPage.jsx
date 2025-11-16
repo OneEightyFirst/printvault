@@ -141,32 +141,43 @@ export const PreviewPage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header with navigation and theme toggle */}
       <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
-              </svg>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">PrintVault</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Shared Preview</p>
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4 flex-1">
+              {/* Logo */}
+              <div className="flex items-center gap-2">
+                <svg className="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                </svg>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">PrintVault</h1>
               </div>
+
+              {/* Breadcrumbs */}
+              <div className="flex-1">
+                <Breadcrumbs
+                  path={pathStack}
+                  onNavigate={handleBreadcrumbClick}
+                />
+              </div>
+
+              {/* Expiry notice - compact */}
+              {tokenData?.expiresAt && (
+                <div className="hidden md:block text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                  Expires: {new Date(tokenData.expiresAt).toLocaleString(undefined, { 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: 'numeric', 
+                    minute: '2-digit' 
+                  })}
+                </div>
+              )}
             </div>
-            <ThemeToggle />
+
+            {/* Theme Toggle */}
+            <div className="ml-4">
+              <ThemeToggle />
+            </div>
           </div>
-
-          {/* Breadcrumbs - always show when we have navigation initialized */}
-          <Breadcrumbs
-            path={pathStack}
-            onNavigate={handleBreadcrumbClick}
-          />
-
-          {/* Expiry notice */}
-          {tokenData?.expiresAt && (
-            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-              Link expires: {new Date(tokenData.expiresAt).toLocaleString()}
-            </div>
-          )}
         </div>
       </nav>
 
