@@ -37,14 +37,18 @@ export const usePreviewNavigation = (token) => {
 
     try {
       const data = await listFolderContents(folderId, previewAccessToken);
+      console.log('📁 Raw folder data from API:', data); // DEBUG
       
       // Categorize files (unified API returns raw files list)
       const files = data.files || [];
+      console.log('📄 Files to categorize:', files.length, files); // DEBUG
+      
       const folders = [];
       const images = [];
       const stlFiles = [];
 
       files.forEach(file => {
+        console.log('  - File:', file.name, 'Type:', file.mimeType); // DEBUG
         if (file.mimeType === 'application/vnd.google-apps.folder') {
           folders.push(file);
         } else if (file.mimeType?.startsWith('image/')) {
@@ -54,6 +58,7 @@ export const usePreviewNavigation = (token) => {
         }
       });
 
+      console.log('✅ Categorized:', { folders: folders.length, images: images.length, stlFiles: stlFiles.length }); // DEBUG
       setFolderContents({ folders, images, stlFiles });
     } catch (err) {
       console.error('Error loading folder:', err);
