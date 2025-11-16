@@ -141,7 +141,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router basename="/printvault">
       <Routes>
         {/* Public preview route (no auth required) */}
         <Route path="/preview/:token" element={<PreviewPage />} />
