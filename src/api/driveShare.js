@@ -137,15 +137,21 @@ export const fetchSharedFile = async (token) => {
 
 /**
  * Fetch folder contents via the share proxy
+ * Can optionally fetch a subfolder by passing folderId
  */
-export const fetchSharedFolder = async (token) => {
+export const fetchSharedFolder = async (token, folderId = null) => {
   const functionsUrl = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
   
   if (!functionsUrl) {
     throw new Error('Firebase Functions URL not configured');
   }
 
-  const response = await fetch(`${functionsUrl}/shareFolderContents?token=${token}`);
+  let url = `${functionsUrl}/shareFolderContents?token=${token}`;
+  if (folderId) {
+    url += `&folderId=${folderId}`;
+  }
+
+  const response = await fetch(url);
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Failed to fetch folder' }));

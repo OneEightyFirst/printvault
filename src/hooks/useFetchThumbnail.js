@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { getThumbnailUrl } from '../api/googleDrive';
+import { getThumbnailUrl } from '../api/unifiedDriveApi';
 import { cache } from '../utils/cache';
 
 /**
  * Hook to fetch and cache thumbnails
+ * Automatically uses the right API (direct or proxy) based on access token
  */
 export const useFetchThumbnail = (fileId, accessToken) => {
   const [thumbnailUrl, setThumbnailUrl] = useState(null);

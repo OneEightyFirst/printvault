@@ -256,7 +256,7 @@ exports.shareProxy = functions.https.onRequest(async (req, res) => {
   }
 
   try {
-    const { token } = req.query;
+    const { token, fileId: requestedFileId } = req.query;
 
     if (!token) {
       res.status(400).json({ error: 'Missing token parameter' });
@@ -278,14 +278,14 @@ exports.shareProxy = functions.https.onRequest(async (req, res) => {
       return;
     }
 
-    const { fileId, itemType } = payload;
+    // Use requested fileId (for images/subfiles) or token's fileId
+    const targetFileId = requestedFileId || payload.fileId;
 
     // Get service account access token
-    // Note: This requires setting up a service account with Drive API access
     const accessToken = await getServiceAccountToken();
 
     // Fetch file from Google Drive
-    const driveUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
+    const driveUrl = `https://www.googleapis.com/drive/v3/files/${targetFileId}?alt=media`;
     
     const driveResponse = await fetch(driveUrl, {
       headers: {
@@ -340,7 +340,7 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
   }
 
   try {
-    const { token } = req.query;
+    const { token, folderId } = req.query;
 
     if (!token) {
       res.status(400).json({ error: 'Missing token parameter' });
@@ -362,18 +362,21 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
       return;
     }
 
-    const { fileId, itemType } = payload;
+    const { fileId: rootFolderId, itemType } = payload;
 
     if (itemType !== 'folder') {
       res.status(400).json({ error: 'Token is not for a folder' });
       return;
     }
 
+    // Use the provided folderId for subfolder navigation, or root folder
+    const targetFolderId = folderId || rootFolderId;
+
     // Get service account access token
     const accessToken = await getServiceAccountToken();
 
     // List folder contents
-    const query = `'${fileId}' in parents and trashed = false`;
+    const query = `'${targetFolderId}' in parents and trashed = false`;
     const fields = 'files(id,name,mimeType,modifiedTime,size)';
     const driveUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=${encodeURIComponent(fields)}`;
     

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { canSearchFiles } from '../api/unifiedDriveApi';
 
 /**
  * Hook to find a preview image for an STL file
@@ -9,7 +10,8 @@ export const useSTLPreviewImage = (file, parentFolderId, accessToken) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!file || !file.name.toLowerCase().endsWith('.stl') || !parentFolderId || !accessToken) {
+    // Disable if can't search files (e.g., preview mode)
+    if (!file || !file.name.toLowerCase().endsWith('.stl') || !parentFolderId || !accessToken || !canSearchFiles(accessToken)) {
       return;
     }
 
