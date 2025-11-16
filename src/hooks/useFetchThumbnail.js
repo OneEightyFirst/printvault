@@ -30,6 +30,7 @@ export const useFetchThumbnail = (fileId, accessToken) => {
 
       try {
         const url = await getThumbnailUrl(fileId, accessToken);
+        console.log('Thumbnail URL for', fileId, ':', url); // DEBUG
         
         if (url) {
           cache.setThumbnail(fileId, url);

@@ -155,13 +155,11 @@ export const PreviewPage = () => {
             <ThemeToggle />
           </div>
 
-          {/* Breadcrumbs */}
-          {pathStack.length > 0 && (
-            <Breadcrumbs
-              path={pathStack}
-              onNavigate={handleBreadcrumbClick}
-            />
-          )}
+          {/* Breadcrumbs - always show when we have navigation initialized */}
+          <Breadcrumbs
+            path={pathStack}
+            onNavigate={handleBreadcrumbClick}
+          />
 
           {/* Expiry notice */}
           {tokenData?.expiresAt && (
