@@ -280,6 +280,7 @@ exports.shareProxy = functions.https.onRequest(async (req, res) => {
 
     // Use requested fileId (for images/subfiles) or token's fileId
     const targetFileId = requestedFileId || payload.fileId;
+    const itemType = payload.itemType; // Extract itemType from token
 
     // Get service account access token
     const accessToken = await getServiceAccountToken();
@@ -298,13 +299,8 @@ exports.shareProxy = functions.https.onRequest(async (req, res) => {
       return;
     }
 
-    // Determine content type
-    let contentType = 'application/octet-stream';
-    if (itemType === 'image') {
-      contentType = driveResponse.headers.get('content-type') || 'image/jpeg';
-    } else if (itemType === 'stl') {
-      contentType = 'application/octet-stream';
-    }
+    // Determine content type from Drive response
+    const contentType = driveResponse.headers.get('content-type') || 'application/octet-stream';
 
     // Set headers and stream response
     res.set('Content-Type', contentType);
