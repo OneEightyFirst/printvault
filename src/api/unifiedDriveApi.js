@@ -128,3 +128,22 @@ export const canSearchFiles = (accessToken) => {
   return client.canSearchFiles();
 };
 
+/**
+ * Download file data as ArrayBuffer
+ */
+export const downloadFile = async (fileId, accessToken) => {
+  const url = await getFileUrl(fileId, accessToken);
+  
+  const response = await fetch(url, {
+    headers: isPreviewMode(accessToken) ? {} : {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to download file');
+  }
+
+  return response.arrayBuffer();
+};
+

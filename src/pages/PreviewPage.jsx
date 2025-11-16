@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { validateShareToken } from '../api/driveShare';
 import { usePreviewNavigation } from '../hooks/usePreviewNavigation';
+import { getFileUrl } from '../api/unifiedDriveApi';
 import { FolderGrid } from '../components/FolderGrid';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { ThemeToggle } from '../components/ThemeToggle';
@@ -19,6 +20,7 @@ export const PreviewPage = () => {
   const [tokenData, setTokenData] = useState(null);
   const [selectedSTL, setSelectedSTL] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const {
     pathStack,
@@ -36,6 +38,24 @@ export const PreviewPage = () => {
       validateAndInitialize();
     }
   }, [token]);
+
+  // Load image URL when image is selected
+  useEffect(() => {
+    if (selectedImage) {
+      loadImageUrl();
+    } else {
+      setImageUrl(null);
+    }
+  }, [selectedImage]);
+
+  const loadImageUrl = async () => {
+    try {
+      const url = await getFileUrl(selectedImage.id, `preview:${token}`);
+      setImageUrl(url);
+    } catch (err) {
+      console.error('Error loading image URL:', err);
+    }
+  };
 
   const validateAndInitialize = async () => {
     setInitializing(true);
@@ -199,11 +219,17 @@ export const PreviewPage = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <img
-                src={`https://www.googleapis.com/drive/v3/files/${selectedImage.id}?alt=media`}
-                alt={selectedImage.name}
-                className="max-w-full max-h-screen object-contain mx-auto"
-              />
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt={selectedImage.name}
+                  className="max-w-full max-h-screen object-contain mx-auto"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-screen">
+                  <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
               <div className="absolute bottom-4 left-0 right-0 text-center">
                 <p className="text-white text-lg font-medium bg-black bg-opacity-50 inline-block px-4 py-2 rounded">
                   {selectedImage.name}
