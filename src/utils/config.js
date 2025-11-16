@@ -6,14 +6,15 @@
  */
 
 export const FOLDER_CONFIG = {
-  // Root folder name to search for
-  ROOT_FOLDER_NAME: 'Clean STL',
+  // Default root folder name (used as example only - app prompts user to select)
+  ROOT_FOLDER_NAME: 'My STL Files',
   
-  // Alternative root folder names to try if first one not found
+  // Alternative root folder names to show as suggestions
   ALTERNATIVE_ROOT_NAMES: [
     'STL Files',
     'STL Collection',
-    '3D Models'
+    '3D Models',
+    'Print Files'
   ],
   
   // Maximum depth for recursive image search

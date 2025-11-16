@@ -2,7 +2,7 @@
 
 export const ERROR_MESSAGES = {
   NO_ACCESS_TOKEN: 'No access token available. Please sign in again.',
-  FOLDER_NOT_FOUND: 'Could not find "Clean STL" folder. Please make sure it exists in your Google Drive.',
+  FOLDER_NOT_FOUND: 'Could not find the selected folder. Please choose a different root folder in Settings.',
   DRIVE_API_ERROR: 'Failed to access Google Drive. Please check your permissions.',
   STL_LOAD_ERROR: 'Failed to load STL file. The file may be corrupted or too large.',
   AUTH_ERROR: 'Authentication failed. Please try signing in again.',

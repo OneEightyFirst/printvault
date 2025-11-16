@@ -105,27 +105,23 @@ The app will open at `http://localhost:3000`
 
 ## Google Drive Structure
 
-The app expects a folder structure like:
+The app is flexible and works with any folder structure. On first login, you'll select your root folder from Google Drive.
 
+Example structure:
 ```
-/Clean STL
-    /FDM
-        /Fantasy
-        /Modern
-        /Personal
-    /Resin
-        /Bases
-        /Boardgame
-        /Fantasy
-        /Personal
+/Your Root Folder
+    /Category 1
+        /Subcategory A
+    /Category 2
+        /Subcategory B
 ```
 
-Inside category folders:
+For STL collections, a common structure is:
 ```
 /CreatorName
     /Specific release
         model.stl
-CreatorName.jpg (optional)
+CreatorName.jpg (optional preview image)
 ```
 
 ## How It Works
@@ -139,10 +135,11 @@ CreatorName.jpg (optional)
 
 ### Folder Navigation
 
-1. App searches for "Clean STL" folder on initialization
+1. App prompts you to select a root folder on first login
 2. User navigates through folders via visual cards
 3. Breadcrumbs track the path and allow quick navigation
 4. Each folder loads its contents dynamically
+5. Root folder selection is saved and can be changed in settings
 
 ### Preview Images
 
@@ -242,8 +239,8 @@ firebase/
 
 ## Troubleshooting
 
-### "Could not find Clean STL folder"
-Make sure you have a folder named exactly "Clean STL" in your Google Drive root or accessible location.
+### Root Folder Not Found
+On first login, you'll be prompted to select your root folder. You can change this later via the Settings menu (hamburger icon in top right).
 
 ### CORS Errors
 If you encounter CORS issues accessing Drive files:

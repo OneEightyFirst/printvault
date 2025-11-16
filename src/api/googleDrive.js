@@ -200,11 +200,11 @@ export const getThumbnailUrl = async (fileId, accessToken) => {
 };
 
 /**
- * Find the root "Clean STL" folder
- * User will need to provide the folder ID initially
+ * Find a folder by name (legacy function - app now uses folder selector)
+ * @deprecated Use FolderSelector component instead
  */
 export const findCleanSTLFolder = async (accessToken) => {
-  const query = "name = 'Clean STL' and mimeType = 'application/vnd.google-apps.folder' and trashed = false";
+  const query = "name = 'My STL Files' and mimeType = 'application/vnd.google-apps.folder' and trashed = false";
   const fields = 'files(id,name)';
   
   const url = `${DRIVE_FILES_ENDPOINT}?q=${encodeURIComponent(query)}&fields=${encodeURIComponent(fields)}`;
