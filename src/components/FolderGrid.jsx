@@ -14,6 +14,7 @@ export const FolderGrid = ({
   onShare,
   accessToken,
   currentFolderId,
+  user,
   loading 
 }) => {
   if (loading) {
@@ -62,6 +63,7 @@ export const FolderGrid = ({
                 accessToken={accessToken}
                 parentFolderId={currentFolderId}
                 isFolder={true}
+                user={user}
               />
             ))}
           </div>
@@ -84,6 +86,7 @@ export const FolderGrid = ({
                 accessToken={accessToken}
                 parentFolderId={currentFolderId}
                 isFolder={false}
+                user={user}
               />
             ))}
           </div>
@@ -106,6 +109,7 @@ export const FolderGrid = ({
                 accessToken={accessToken}
                 parentFolderId={currentFolderId}
                 isFolder={false}
+                user={user}
               />
             ))}
           </div>

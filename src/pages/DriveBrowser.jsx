@@ -221,6 +221,7 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
           onShare={handleShare}
           accessToken={accessToken}
           currentFolderId={currentFolderId}
+          user={user}
           loading={loading}
         />
 

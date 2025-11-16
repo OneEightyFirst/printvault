@@ -8,7 +8,7 @@ import { isSTL } from '../utils/mimeUtils';
 /**
  * File or folder card component
  */
-export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder, onShare }) => {
+export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder, onShare, user }) => {
   // For folders: find preview image in folder
   const { imageFileId } = useFindFolderPreviewImage(
     isFolder ? file.id : null,
@@ -124,7 +124,7 @@ export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder,
             {file.name}
           </h3>
           
-          {onShare && (
+          {onShare && user?.email === 'iam@michaelfwells.com' && (
             <button
               onClick={handleShareClick}
               className="flex-shrink-0 p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"

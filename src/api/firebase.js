@@ -22,7 +22,8 @@ const auth = getAuth(app);
 
 // Configure Google Provider with Drive scope
 const googleProvider = new GoogleAuthProvider();
-googleProvider.addScope('https://www.googleapis.com/auth/drive.readonly');
+// Using full drive scope to allow both reading files and modifying permissions for sharing
+googleProvider.addScope('https://www.googleapis.com/auth/drive');
 
 // Store for OAuth access token
 let storedAccessToken = null;
