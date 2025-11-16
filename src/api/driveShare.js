@@ -81,8 +81,10 @@ export const generatePrivateLink = async (fileId, itemType, expiryMinutes) => {
   const token = data.token;
   
   // Generate the preview URL with the token
+  // Use import.meta.env.BASE_URL to include subdirectory path
   const baseUrl = window.location.origin;
-  return `${baseUrl}/preview/${token}`;
+  const basePath = import.meta.env.BASE_URL || '/';
+  return `${baseUrl}${basePath}preview/${token}`;
 };
 
 /**
