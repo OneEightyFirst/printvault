@@ -114,7 +114,7 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
   };
 
   const handleCreatePrivateLink = async (fileId, itemType, expiryMinutes) => {
-    return await generatePrivateLink(fileId, itemType, expiryMinutes);
+    return await generatePrivateLink(fileId, itemType, expiryMinutes, accessToken);
   };
 
   const closeShareModal = () => {

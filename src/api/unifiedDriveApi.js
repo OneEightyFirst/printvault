@@ -90,12 +90,17 @@ class PreviewDriveClient {
 
     const data = await response.json();
     
-    // Firebase returns { folders, images, stlFiles } - convert to files array
+    console.log('🔵 PreviewDriveClient raw response:', data); // DEBUG
+    
+    // Firebase returns { folders, images, stlFiles } already categorized
+    // Just need to add them to files array for compatibility
     const files = [
       ...(data.folders || []),
       ...(data.images || []),
       ...(data.stlFiles || [])
     ];
+    
+    console.log('🔵 PreviewDriveClient merged files:', files.length, files); // DEBUG
     
     return { files };
   }

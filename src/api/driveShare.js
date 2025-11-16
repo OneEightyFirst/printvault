@@ -51,9 +51,9 @@ export const generatePublicLink = async (fileId, itemType, accessToken) => {
 
 /**
  * Request a private share token from Firebase backend
- * The backend will create a signed JWT token
+ * The backend will create a signed JWT token and grant service account access
  */
-export const generatePrivateLink = async (fileId, itemType, expiryMinutes) => {
+export const generatePrivateLink = async (fileId, itemType, expiryMinutes, accessToken) => {
   const functionsUrl = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
   
   if (!functionsUrl) {
@@ -68,7 +68,8 @@ export const generatePrivateLink = async (fileId, itemType, expiryMinutes) => {
     body: JSON.stringify({
       fileId,
       itemType,
-      expiryMinutes
+      expiryMinutes,
+      userAccessToken: accessToken // Pass user's OAuth token to grant service account access
     })
   });
 

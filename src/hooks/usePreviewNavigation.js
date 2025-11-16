@@ -37,11 +37,11 @@ export const usePreviewNavigation = (token) => {
 
     try {
       const data = await listFolderContents(folderId, previewAccessToken);
-      console.log('📁 Raw folder data from API:', data); // DEBUG
+      console.log('📁 Raw folder data from API:', JSON.stringify(data, null, 2)); // DEBUG - full object
       
       // Categorize files (unified API returns raw files list)
       const files = data.files || [];
-      console.log('📄 Files to categorize:', files.length, files); // DEBUG
+      console.log('📄 Files to categorize:', files.length, JSON.stringify(files, null, 2)); // DEBUG
       
       const folders = [];
       const images = [];

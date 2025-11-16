@@ -152,11 +152,47 @@ exports.generateShareToken = functions.https.onRequest(async (req, res) => {
   }
 
   try {
-    const { fileId, itemType, expiryMinutes } = req.body;
+    const { fileId, itemType, expiryMinutes, userAccessToken } = req.body;
 
     if (!fileId || !itemType || !expiryMinutes) {
       res.status(400).json({ error: 'Missing required parameters' });
       return;
+    }
+
+    // If userAccessToken is provided, grant service account access to the folder
+    if (userAccessToken && itemType === 'folder') {
+      try {
+        const serviceAccountEmail = 'printvault-850f7@appspot.gserviceaccount.com';
+        
+        console.log('🔐 Granting service account access to folder:', fileId);
+        
+        // Grant the service account reader permission to this folder
+        const permissionUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/permissions`;
+        const permissionResponse = await fetch(permissionUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${userAccessToken}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            role: 'reader',
+            type: 'user',
+            emailAddress: serviceAccountEmail
+          })
+        });
+
+        if (!permissionResponse.ok) {
+          const errorData = await permissionResponse.json().catch(() => ({}));
+          console.error('Failed to grant service account access:', errorData);
+          // Don't fail the whole request - continue with token generation
+          // The folder might already be shared
+        } else {
+          console.log('✅ Service account granted access to folder');
+        }
+      } catch (permError) {
+        console.error('Error granting permission:', permError);
+        // Continue anyway - folder might already be shared
+      }
     }
 
     // Calculate expiry timestamp
@@ -367,6 +403,13 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
 
     // Use the provided folderId for subfolder navigation, or root folder
     const targetFolderId = folderId || rootFolderId;
+    
+    console.log('📂 shareFolderContents request:', {
+      requestedFolderId: folderId,
+      rootFolderId,
+      targetFolderId,
+      itemType
+    });
 
     // Get service account access token
     const accessToken = await getServiceAccountToken();
@@ -376,6 +419,8 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
     const fields = 'files(id,name,mimeType,modifiedTime,size)';
     const driveUrl = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&fields=${encodeURIComponent(fields)}`;
     
+    console.log('📂 Fetching Drive URL:', driveUrl);
+    
     const driveResponse = await fetch(driveUrl, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
@@ -383,11 +428,15 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
     });
 
     if (!driveResponse.ok) {
+      const errorData = await driveResponse.json().catch(() => ({}));
+      console.error('📂 Drive API error:', driveResponse.status, errorData);
       res.status(driveResponse.status).json({ error: 'Failed to fetch folder from Drive' });
       return;
     }
 
     const data = await driveResponse.json();
+    
+    console.log('📂 Raw Drive response:', data.files?.length || 0, 'files');
     
     // Categorize files
     const files = data.files || [];
@@ -423,6 +472,13 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
     const standaloneImages = images.filter(img => {
       const imgBaseName = img.name.replace(/\.(jpg|jpeg|png|webp|gif)$/i, '');
       return !folders.some(f => f.name === imgBaseName);
+    });
+
+    console.log('📂 Categorized result:', {
+      folders: folders.length,
+      standaloneImages: standaloneImages.length,
+      stlFiles: stlFiles.length,
+      totalMatched: folders.filter(f => f.previewImageId).length + ' folders with preview images'
     });
 
     res.status(200).json({ 
