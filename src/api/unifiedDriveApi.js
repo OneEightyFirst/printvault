@@ -88,7 +88,16 @@ class PreviewDriveClient {
       throw new Error(error.message || 'Failed to fetch folder');
     }
 
-    return response.json();
+    const data = await response.json();
+    
+    // Firebase returns { folders, images, stlFiles } - convert to files array
+    const files = [
+      ...(data.folders || []),
+      ...(data.images || []),
+      ...(data.stlFiles || [])
+    ];
+    
+    return { files };
   }
 
   canSearchFiles() {
