@@ -405,7 +405,31 @@ exports.shareFolderContents = functions.https.onRequest(async (req, res) => {
       }
     });
 
-    res.status(200).json({ folders, images, stlFiles });
+    // Match preview images to folders by name
+    // If image name matches folder name (e.g., "Sci-fi.jpg" for "Sci-fi" folder)
+    folders.forEach(folder => {
+      const baseName = folder.name;
+      const matchingImage = images.find(img => {
+        const imgBaseName = img.name.replace(/\.(jpg|jpeg|png|webp|gif)$/i, '');
+        return imgBaseName === baseName;
+      });
+      
+      if (matchingImage) {
+        folder.previewImageId = matchingImage.id;
+      }
+    });
+
+    // Filter out images that were matched to folders (they're preview images, not standalone)
+    const standaloneImages = images.filter(img => {
+      const imgBaseName = img.name.replace(/\.(jpg|jpeg|png|webp|gif)$/i, '');
+      return !folders.some(f => f.name === imgBaseName);
+    });
+
+    res.status(200).json({ 
+      folders, 
+      images: standaloneImages, 
+      stlFiles 
+    });
 
   } catch (error) {
     console.error('Share folder contents error:', error);

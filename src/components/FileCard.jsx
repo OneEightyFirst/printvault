@@ -10,12 +10,17 @@ import { isSTL } from '../utils/mimeUtils';
  */
 export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder, onShare, user }) => {
   // For folders: find preview image in folder
+  // In preview mode, use previewImageId from file data if available
   const { imageFileId } = useFindFolderPreviewImage(
     isFolder ? file.id : null,
     file.name,
     parentFolderId,
     accessToken
   );
+  
+  // Use previewImageId from file data (set by Firebase Function in preview mode)
+  // or fallback to hook result
+  const folderPreviewId = file.previewImageId || imageFileId;
 
   // For STL files: find matching preview image in same folder
   const { previewImageId: stlPreviewId } = useSTLPreviewImage(
@@ -27,10 +32,10 @@ export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder,
   const renderIcon = () => {
     if (isFolder) {
       // Folder with preview image
-      if (imageFileId) {
+      if (folderPreviewId) {
         return (
           <ImageThumbnail
-            fileId={imageFileId}
+            fileId={folderPreviewId}
             fileName={file.name}
             accessToken={accessToken}
             className="w-full h-48 object-cover"
