@@ -86,27 +86,6 @@ export const FolderGrid = ({
           </div>
         </section>
       )}
-
-      {/* Images section */}
-      {images.length > 0 && (
-        <section>
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-            Images ({images.length})
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            {images.map(image => (
-              <FileCard
-                key={image.id}
-                file={image}
-                onClick={() => onImageClick(image)}
-                accessToken={accessToken}
-                parentFolderId={currentFolderId}
-                isFolder={false}
-              />
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 };
