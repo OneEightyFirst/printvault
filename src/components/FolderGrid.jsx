@@ -57,11 +57,9 @@ export const FolderGrid = ({
                 key={folder.id}
                 file={folder}
                 onClick={() => onFolderClick(folder.id, folder.name)}
-                onShare={onShare}
                 accessToken={accessToken}
                 parentFolderId={currentFolderId}
                 isFolder={true}
-                user={user}
               />
             ))}
           </div>
@@ -80,11 +78,9 @@ export const FolderGrid = ({
                 key={file.id}
                 file={file}
                 onClick={() => onSTLClick(file)}
-                onShare={onShare}
                 accessToken={accessToken}
                 parentFolderId={currentFolderId}
                 isFolder={false}
-                user={user}
               />
             ))}
           </div>
@@ -103,11 +99,9 @@ export const FolderGrid = ({
                 key={image.id}
                 file={image}
                 onClick={() => onImageClick(image)}
-                onShare={onShare}
                 accessToken={accessToken}
                 parentFolderId={currentFolderId}
                 isFolder={false}
-                user={user}
               />
             ))}
           </div>
