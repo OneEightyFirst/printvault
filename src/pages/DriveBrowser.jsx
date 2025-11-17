@@ -13,6 +13,7 @@ import { useDriveNavigation } from '../hooks/useDriveNavigation';
 export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
   const [selectedSTL, setSelectedSTL] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [rootFolderId, setRootFolderId] = useState(null);
   const [rootFolderName, setRootFolderName] = useState(null);
   const [showFolderSelector, setShowFolderSelector] = useState(false);
@@ -79,12 +80,49 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
     setSelectedImage(file);
   };
 
+  // Load image URL when image is selected
+  useEffect(() => {
+    if (!selectedImage || !accessToken) {
+      setSelectedImageUrl(null);
+      return;
+    }
+
+    const loadImageUrl = async () => {
+      try {
+        const url = `https://www.googleapis.com/drive/v3/files/${selectedImage.id}?alt=media`;
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          }
+        });
+        
+        if (response.ok) {
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          setSelectedImageUrl(objectUrl);
+        }
+      } catch (error) {
+        console.error('Error loading image:', error);
+      }
+    };
+
+    loadImageUrl();
+
+    // Cleanup object URL when image changes
+    return () => {
+      if (selectedImageUrl) {
+        URL.revokeObjectURL(selectedImageUrl);
+      }
+    };
+  }, [selectedImage, accessToken]);
+
   const closeSTLViewer = () => {
     setSelectedSTL(null);
   };
 
   const closeImageViewer = () => {
     setSelectedImage(null);
+    setSelectedImageUrl(null);
   };
 
   const handleFolderSelected = async (folderId, folderName) => {
@@ -208,11 +246,17 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
-              <img
-                src={`https://www.googleapis.com/drive/v3/files/${selectedImage.id}?alt=media`}
-                alt={selectedImage.name}
-                className="max-w-full max-h-screen rounded-lg shadow-2xl"
-              />
+              {selectedImageUrl ? (
+                <img
+                  src={selectedImageUrl}
+                  alt={selectedImage.name}
+                  className="max-w-full max-h-screen rounded-lg shadow-2xl"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-64">
+                  <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
             </div>
           </div>
         )}
