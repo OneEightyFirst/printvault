@@ -115,7 +115,14 @@ export const listChildren = async (folderId, accessToken) => {
     }
   });
 
-  return { folders, images, stlFiles };
+  // Filter out images that match folder names (those are thumbnails, not content)
+  // Remove file extension from image name and compare with folder names
+  const standaloneImages = images.filter(img => {
+    const imgBaseName = img.name.replace(/\.(jpg|jpeg|png|webp|gif)$/i, '');
+    return !folders.some(folder => folder.name === imgBaseName);
+  });
+
+  return { folders, images: standaloneImages, stlFiles };
 };
 
 /**
