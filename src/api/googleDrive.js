@@ -86,6 +86,43 @@ const makeDriveRequest = async (url, accessToken, options = {}, retryCount = 0) 
 };
 
 /**
+ * Check if a folder contains any STL files (recursively)
+ * Uses a quick search query to avoid loading full folder contents
+ */
+const hasSTLFilesRecursive = async (folderId, accessToken, depth = 0, maxDepth = 10) => {
+  // Safety limit to prevent infinite recursion
+  if (depth > maxDepth) return false;
+  
+  try {
+    // Search for .stl files in this folder and all subfolders
+    const query = `'${folderId}' in parents and trashed = false`;
+    const fields = 'files(id,name,mimeType)';
+    const url = `${DRIVE_FILES_ENDPOINT}?q=${encodeURIComponent(query)}&fields=${encodeURIComponent(fields)}&pageSize=1000`;
+    
+    const response = await makeDriveRequest(url, accessToken);
+    const data = await response.json();
+    const files = data.files || [];
+    
+    // Check if any direct children are STL files
+    const hasDirectSTL = files.some(file => file.name.toLowerCase().endsWith('.stl'));
+    if (hasDirectSTL) return true;
+    
+    // Check subfolders recursively
+    const subfolders = files.filter(file => file.mimeType === 'application/vnd.google-apps.folder');
+    for (const subfolder of subfolders) {
+      const hasSTLInSubfolder = await hasSTLFilesRecursive(subfolder.id, accessToken, depth + 1, maxDepth);
+      if (hasSTLInSubfolder) return true;
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error checking for STL files:', error);
+    // On error, assume folder might have STLs to avoid hiding content
+    return true;
+  }
+};
+
+/**
  * List children of a folder
  * Returns folders, images, and STL files separately
  */
@@ -115,14 +152,23 @@ export const listChildren = async (folderId, accessToken) => {
     }
   });
 
+  // Filter out folders that don't contain any STL files (recursively)
+  const foldersWithSTLs = [];
+  for (const folder of folders) {
+    const hasSTLs = await hasSTLFilesRecursive(folder.id, accessToken);
+    if (hasSTLs) {
+      foldersWithSTLs.push(folder);
+    }
+  }
+
   // Filter out images that match folder names (those are thumbnails, not content)
   // Remove file extension from image name and compare with folder names
   const standaloneImages = images.filter(img => {
     const imgBaseName = img.name.replace(/\.(jpg|jpeg|png|webp|gif)$/i, '');
-    return !folders.some(folder => folder.name === imgBaseName);
+    return !foldersWithSTLs.some(folder => folder.name === imgBaseName);
   });
 
-  return { folders, images: standaloneImages, stlFiles };
+  return { folders: foldersWithSTLs, images: standaloneImages, stlFiles };
 };
 
 /**
