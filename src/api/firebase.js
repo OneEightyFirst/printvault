@@ -20,10 +20,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Configure Google Provider with Drive scope
+// Configure Google Provider with Drive read-only scope
 const googleProvider = new GoogleAuthProvider();
-// Using full drive scope to allow both reading files and modifying permissions for sharing
-googleProvider.addScope('https://www.googleapis.com/auth/drive');
+googleProvider.addScope('https://www.googleapis.com/auth/drive.readonly');
 
 // Store for OAuth access token
 let storedAccessToken = null;

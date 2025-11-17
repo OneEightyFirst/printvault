@@ -11,10 +11,8 @@ export const FolderGrid = ({
   onFolderClick, 
   onImageClick, 
   onSTLClick,
-  onShare,
   accessToken,
   currentFolderId,
-  user,
   loading 
 }) => {
   if (loading) {

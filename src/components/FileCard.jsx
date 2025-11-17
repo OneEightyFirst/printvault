@@ -8,9 +8,8 @@ import { isSTL } from '../utils/mimeUtils';
 /**
  * File or folder card component
  */
-export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder, onShare, user }) => {
+export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder }) => {
   // For folders: find preview image in folder
-  // In preview mode, use previewImageId from file data if available
   const { imageFileId } = useFindFolderPreviewImage(
     isFolder ? file.id : null,
     file.name,
@@ -18,8 +17,7 @@ export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder,
     accessToken
   );
   
-  // Use previewImageId from file data (set by Firebase Function in preview mode)
-  // or fallback to hook result
+  // Use previewImageId from file data or fallback to hook result
   const folderPreviewId = file.previewImageId || imageFileId;
 
   // For STL files: find matching preview image in same folder
@@ -107,30 +105,6 @@ export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder,
     );
   };
 
-  const handleShareClick = (e) => {
-    e.stopPropagation();
-    if (onShare) {
-      onShare(file, isFolder);
-    }
-  };
-
-  const handleQuickShare = async (e) => {
-    e.stopPropagation();
-    
-    // Generate Google Drive direct link
-    const driveLink = isFolder 
-      ? `https://drive.google.com/drive/folders/${file.id}`
-      : `https://drive.google.com/file/d/${file.id}/view`;
-    
-    try {
-      await navigator.clipboard.writeText(driveLink);
-      // Could add a toast notification here
-      console.log('Drive link copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
   return (
     <div
       className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden group relative"
@@ -141,39 +115,9 @@ export const FileCard = ({ file, onClick, accessToken, parentFolderId, isFolder,
       </div>
       
       <div className="p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-medium text-gray-900 dark:text-white truncate flex-1 cursor-pointer" title={file.name} onClick={onClick}>
-            {file.name}
-          </h3>
-          
-          {user?.email === 'iam@michaelfwells.com' && (
-            <div className="flex items-center gap-1">
-              {/* Quick copy Drive link */}
-              <button
-                onClick={handleQuickShare}
-                className="flex-shrink-0 p-1.5 text-gray-400 dark:text-gray-500 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
-                title="Copy Drive Link"
-              >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                </svg>
-              </button>
-
-              {/* Advanced share modal (with Functions) */}
-              {onShare && (
-                <button
-                  onClick={handleShareClick}
-                  className="flex-shrink-0 p-1.5 text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
-                  title="Share Preview Link"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        <h3 className="font-medium text-gray-900 dark:text-white truncate cursor-pointer" title={file.name} onClick={onClick}>
+          {file.name}
+        </h3>
         
         {!isFolder && (
           <div className="mt-1 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-between">

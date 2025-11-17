@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { listChildren, findFirstImageRecursive } from '../api/googleDrive';
 import { cache } from '../utils/cache';
-import { canSearchFiles } from '../api/unifiedDriveApi';
 
 /**
  * Hook to find preview image for a folder
@@ -16,8 +15,7 @@ export const useFindFolderPreviewImage = (folderId, folderName, parentFolderId, 
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Disable if can't search files (e.g., preview mode)
-    if (!folderId || !accessToken || !canSearchFiles(accessToken)) {
+    if (!folderId || !accessToken) {
       setLoading(false);
       return;
     }

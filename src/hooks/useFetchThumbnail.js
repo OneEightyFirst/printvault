@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getThumbnailUrl } from '../api/unifiedDriveApi';
+import { getThumbnailUrl } from '../api/googleDrive';
 import { cache } from '../utils/cache';
 
 /**

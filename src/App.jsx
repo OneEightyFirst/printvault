@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { DriveBrowser } from './pages/DriveBrowser';
-import { PreviewPage } from './pages/PreviewPage';
 import { signInWithGoogle, signOut, onAuthStateChange, refreshAccessToken } from './api/firebase';
 import { setTokenExpiredCallback } from './api/googleDrive';
 
@@ -140,21 +138,11 @@ function App() {
   }
 
   return (
-    <Router basename="/printvault">
-      <Routes>
-        {/* Public preview route (no auth required) */}
-        <Route path="/preview/:token" element={<PreviewPage />} />
-        
-        {/* Protected routes (require auth) */}
-        <Route path="/*" element={
-          user && accessToken ? (
-            <DriveBrowser accessToken={accessToken} user={user} onSignOut={handleSignOut} />
-          ) : (
-            <LoginPage />
-          )
-        } />
-      </Routes>
-    </Router>
+    user && accessToken ? (
+      <DriveBrowser accessToken={accessToken} user={user} onSignOut={handleSignOut} />
+    ) : (
+      <LoginPage />
+    )
   );
 }
 

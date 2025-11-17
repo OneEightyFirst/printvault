@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { downloadFile } from '../api/unifiedDriveApi';
+import { downloadFile } from '../api/googleDrive';
 
 /**
  * STL 3D Viewer Component

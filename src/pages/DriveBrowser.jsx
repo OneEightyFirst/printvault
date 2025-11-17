@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { FolderGrid } from '../components/FolderGrid';
 import { STLViewer } from '../components/STLViewer';
-import { ShareModal } from '../components/ShareModal';
 import { FolderSelector } from '../components/FolderSelector';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { UserMenu } from '../components/UserMenu';
 import { useDriveNavigation } from '../hooks/useDriveNavigation';
-import { generatePublicLink, generatePrivateLink } from '../api/driveShare';
 
 /**
  * Main Drive Browser Page
@@ -20,9 +18,6 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
   const [showFolderSelector, setShowFolderSelector] = useState(false);
   const [initError, setInitError] = useState(null);
   const [initializing, setInitializing] = useState(true);
-  const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [shareItem, setShareItem] = useState(null);
-  const [shareItemType, setShareItemType] = useState(null);
 
   const {
     pathStack,
@@ -90,37 +85,6 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
 
   const closeImageViewer = () => {
     setSelectedImage(null);
-  };
-
-  const handleShare = (file, isFolder) => {
-    setShareItem(file);
-    
-    // Determine item type
-    let itemType = 'folder';
-    if (!isFolder) {
-      if (file.name.toLowerCase().endsWith('.stl')) {
-        itemType = 'stl';
-      } else if (file.mimeType?.startsWith('image/')) {
-        itemType = 'image';
-      }
-    }
-    
-    setShareItemType(itemType);
-    setShareModalOpen(true);
-  };
-
-  const handleCreatePublicLink = async (fileId, itemType) => {
-    return await generatePublicLink(fileId, itemType, accessToken);
-  };
-
-  const handleCreatePrivateLink = async (fileId, itemType, expiryMinutes) => {
-    return await generatePrivateLink(fileId, itemType, expiryMinutes, accessToken);
-  };
-
-  const closeShareModal = () => {
-    setShareModalOpen(false);
-    setShareItem(null);
-    setShareItemType(null);
   };
 
   const handleFolderSelected = async (folderId, folderName) => {
@@ -218,10 +182,8 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
           onFolderClick={handleFolderClick}
           onImageClick={handleImageClick}
           onSTLClick={handleSTLClick}
-          onShare={handleShare}
           accessToken={accessToken}
           currentFolderId={currentFolderId}
-          user={user}
           loading={loading}
         />
 
@@ -254,17 +216,6 @@ export const DriveBrowser = ({ accessToken, user, onSignOut }) => {
             </div>
           </div>
         )}
-
-        {/* Share Modal */}
-        <ShareModal
-          isOpen={shareModalOpen}
-          onClose={closeShareModal}
-          item={shareItem}
-          itemType={shareItemType}
-          onCreatePublicLink={handleCreatePublicLink}
-          onCreatePrivateLink={handleCreatePrivateLink}
-          accessToken={accessToken}
-        />
       </div>
     </div>
   );
